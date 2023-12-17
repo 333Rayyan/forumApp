@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum App - All Posts</title>
+</head>
+
+<body>
+    <!-- Add a search form -->
+    <form action="/all-posts" method="GET">
+        <label for="search">Search Posts:</label>
+        <input type="text" id="search" name="search" placeholder="Enter search term">
+        <button type="submit">Search</button>
+    </form>
+    <br>
+    <br>
+
+
+    <nav>
+        <% if (loggedInUser) { %>
+            <span>Welcome, <%= loggedInUser.username %>!</span>
+            <br>
+            <a href="/logout">Logout</a>
+            <% } else { %>
+                <a href="/login">Login</a>
+                <br>
+                <a href="/register">Register</a>
+                <% } %>
+                    <br>
+                    <a href="/">Home</a>
+    </nav>
+
+    <h1>All Posts</h1>
+
+
+
+    <% if (posts && posts.length> 0) { %>
+        <!-- Display posts -->
+        <ul>
+            <% posts.forEach(post=> { %>
+                <li>
+                    <h2>
+                        <%= post.title %>
+                    </h2>
+                    <p>
+                        <%= post.content %>
+                    </p>
+                </li>
+                <% }); %>
+        </ul>
+        <% } else { %>
+            <p>No posts found.</p>
+            <% } %>
+
+</body>
+
+</html>

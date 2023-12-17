@@ -1,0 +1,1 @@
+to create a post you must be logged in and then you can go to browse topic and you will see an option to create post
