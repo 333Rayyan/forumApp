@@ -215,7 +215,7 @@ app.get('/create-post/:topicId', isAuthenticated, (req, res) => {
 
 app.post('/create-post/:topicId', isAuthenticated, (req, res) => {
 	if (!req.user) {
-		return res.redirect('/login');
+		return res.redirect('./login');
 	}
 
 	const { title, content } = req.body;
@@ -267,7 +267,7 @@ app.get('/reply/:postId', isAuthenticated, (req, res) => {
 
 app.post('/reply/:postId', isAuthenticated, (req, res) => {
 	if (!req.user) {
-		return res.redirect('/login');
+		return res.redirect('./login');
 	}
 
 	const { content } = req.body;
@@ -323,7 +323,7 @@ app.get('/delete-post/:postId', isAuthenticated, (req, res) => {
 
 app.post('/delete-post/:postId', isAuthenticated, (req, res) => {
 	if (!req.user) {
-		return res.redirect('/login');
+		return res.redirect('./login');
 	}
 
 	const postId = req.params.postId;
@@ -331,7 +331,7 @@ app.post('/delete-post/:postId', isAuthenticated, (req, res) => {
 	// Delete the post
 	db.query('DELETE FROM posts WHERE id = ?', [postId], (err, result) => {
 		if (err) throw err;
-		res.redirect('/all-posts');
+		res.redirect('./all-posts');
 	});
 });
 
