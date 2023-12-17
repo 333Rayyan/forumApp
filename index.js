@@ -65,7 +65,7 @@ app.post('/register', (req, res) => {
 
 	db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], (err, result) => {
 		if (err) throw err;
-		res.redirect('/');
+		res.redirect('./');
 	});
 });
 
@@ -128,7 +128,7 @@ app.post('/login', (req, res) => {
 		if (results.length > 0) {
 			// Store user information in the session
 			req.session.user = results[0];
-			res.redirect('/');
+			res.redirect('./');
 		} else {
 			res.render('login', { errorMessage: 'User does not exist.' });
 		}
@@ -342,7 +342,7 @@ app.get('/logout', (req, res) => {
 		if (err) {
 			console.error('Error destroying session:', err);
 		}
-		res.redirect('/');
+		res.redirect('./');
 	});
 });
 
