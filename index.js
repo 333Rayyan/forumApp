@@ -201,7 +201,7 @@ app.post('/create-topic', (req, res) => {
 		const topicId = result.insertId;
 
 		// Redirect to the newly created topic
-		res.redirect(`/topics/${topicId}`);
+		res.redirect(`./topics/${topicId}`);
 	});
 });
 
@@ -227,7 +227,7 @@ app.post('/create-post/:topicId', isAuthenticated, (req, res) => {
 		[title, content, userId, topicId],
 		(err, result) => {
 			if (err) throw err;
-			res.redirect(`/topics/${topicId}`);
+			res.redirect(`./topics/${topicId}`);
 		}
 	);
 });
@@ -290,7 +290,7 @@ app.post('/reply/:postId', isAuthenticated, (req, res) => {
 			[content, userId, postId],
 			(err, result) => {
 				if (err) throw err;
-				res.redirect(`/topics/${topicId}`);
+				res.redirect(`./topics/${topicId}`);
 			}
 		);
 	});
