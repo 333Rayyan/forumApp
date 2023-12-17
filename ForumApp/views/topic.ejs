@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="styles.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Forum App - <%= topicName %>
+	</title>
+</head>
+
+<body>
+	<h1>
+		<%= topicName %>
+	</h1>
+	<br>
+	<a href="/create-post/<%= topicId %>">Create a Post</a>
+	<br>
+	<br>
+	<a href="/">Home</a>
+	<br>
+	<br>
+
+	<!-- Display posts and replies -->
+	<% posts.forEach(post=> { %>
+		<div>
+			<h3>
+				<%= post.title %>
+			</h3>
+			<p>
+				<%= post.content %>
+			</p>
+			<p>Posted by <%= post.username %> on <%= post.created_at %>
+			</p>
+
+			<!-- Display replies for the current post -->
+			<% if (post.replyContent) { %>
+				<div class="reply">
+					<br>
+					<p>Reply: <%= post.replyContent %>
+					</p>
+					<p>Reply by: <%= post.username %>
+					</p>
+				</div>
+				<% } %>
+
+					<!-- Link to reply to the current post -->
+					<a href="/reply/<%= post.id %>">Reply to Post</a>
+
+					<a href="/delete-post/<%= post.id %>">Delete Post</a>
+
+					<hr>
+		</div>
+		<% }); %>
+
+</body>
+
+</html>

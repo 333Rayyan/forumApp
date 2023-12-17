@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum App - Reply</title>
+</head>
+
+<body>
+    <h1>Reply to Post</h1>
+    <p>Post Content: <%= post.content %>
+    </p>
+    <form action="/reply/<%= postId %>" method="post">
+        <label for="content">Your Reply:</label>
+        <textarea id="content" name="content" required></textarea>
+        <br>
+        <button type="submit">Submit Reply</button>
+    </form>
+    <br>
+    <a href="/topics/<%= post.topic_id %>">Back to Topic</a>
+    <br>
+    <a href="/">Home</a>
+</body>
+
+</html>
