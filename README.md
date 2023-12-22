@@ -1,1 +1,2 @@
-to create a post you must be logged in and then you can go to browse topic and you will see an option to create post
+to create a post you must be logged in and then you can go to browse topic and you will see an option to create post.
+on the right hand side you will see an option to login or register. when logged in there will be a message saying welcome (user) and underneath will be the option to view your own profile and logout. you can also check other users profiles which will list their posts and the topics there joint to.

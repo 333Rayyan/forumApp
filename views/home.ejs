@@ -9,24 +9,40 @@
 </head>
 
 <body>
-    <h1>Welcome to the Forum</h1>
-    <a href="/register">Register</a>
-    <br>
-    <a href="/login">Login</a>
-    <br>
-    <a href="/users">All of our users</a>
-    <br>
-    <a href="/profile">Your profile</a>
-    <br>
-    <a href="/about">About us</a>
-    <br>
-    <a href="/topics">Browse our topics</a>
-    <br>
-    <a href="/all-posts">Browse all posts</a>
-    <br>
-    <a href="/create-topic">Create a new topic</a>
-    <br>
-    <a href="/logout">Logout</a>
+    <div class="header">
+        <!-- Display login, register, and logout links on the right side -->
+        <div class="right-links">
+            <nav>
+                <% if (loggedInUser) { %>
+                    <br>
+                    <br>
+                    <span>Welcome, <%= loggedInUser.username %>!</span>
+                    <br>
+                    <a href="./profile">Your profile</a>
+                    <br>
+                    <a href="./logout">Logout</a>
+                    <% } else { %>
+                        <br>
+                        <br>
+                        <a href="./login">Login</a>
+                        <br>
+                        <a href="./register">Register</a>
+                        <% } %>
+            </nav>
+        </div>
+
+        <h1>Welcome to the Forum</h1>
+        <a href="./users">All of our users</a>
+        <br>
+        <a href="./about">About us</a>
+        <br>
+        <a href="./topics">Browse our topics</a>
+        <br>
+        <a href="./all-posts">Browse all posts</a>
+        <br>
+        <a href="./create-topic">Create a new topic</a>
+
+
 </body>
 
 </html>

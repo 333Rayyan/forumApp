@@ -1,3 +1,4 @@
+<!-- topics.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,22 +6,26 @@
 	<link rel="stylesheet" href="styles.css">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Forum App</title>
+	<title>Forum App - Topics</title>
 </head>
 
 <body>
-	<h1>Topics</h1>
-	<ul>
-		<% topics.forEach(topic=> { %>
-			<li><a href="./topics/<%= topic.id %>">
-					<%= topic.name %>
-				</a></li>
-			<% }); %>
-	</ul>
+	<h1>All Topics</h1>
+	<br>
+	<a href="./">Home</a>
 	<br>
 	<br>
-	<br>
-	<a href="/">Back to Home</a>
+
+	<!-- Display the list of topics -->
+	<% topics.forEach(topic=> { %>
+		<div>
+			<!-- Link to the topic's details -->
+			<a href="/topics/<%= topic.id %>">
+				<%= topic.name %>
+			</a>
+		</div>
+		<% }); %>
+
 </body>
 
 </html>

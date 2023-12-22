@@ -43,6 +43,17 @@ const isAuthenticated = (req, res, next) => {
 	}
 };
 
+// Middleware to populate req.user and res.locals.loggedInUser from the session
+app.use((req, res, next) => {
+	if (req.session.user) {
+		req.user = req.session.user;
+	}
+	else {
+		req.user = null;
+	}
+	next();
+});
+
 // home route
 app.get('/', (req, res) => {
 	res.render('home', { loggedInUser: req.user });
@@ -69,71 +80,135 @@ app.post('/register', (req, res) => {
 	});
 });
 
-// Middleware to populate req.user from the session
-app.use((req, res, next) => {
-	if (req.session.user) {
-		req.user = req.session.user;
-	}
-	next();
+
+// profile route by username
+app.get('/profile/:username', isAuthenticated, (req, res) => {
+    const loggedInUser = req.user;
+    const requestedUsername = req.params.username;
+
+    // Fetch user details from the database based on the requested username
+    db.query('SELECT * FROM users WHERE username = ?', [requestedUsername], (err, userResult) => {
+        if (err) throw err;
+
+        if (userResult.length === 0) {
+            return res.send('User does not exist');
+        }
+
+        const userProfile = userResult[0];
+
+        // Fetch the topics the user is a member of
+        db.query(
+            'SELECT topics.name ' +
+            'FROM topic_memberships ' +
+            'INNER JOIN topics ON topic_memberships.topic_id = topics.id ' +
+            'WHERE topic_memberships.user_id = ?',
+            [userProfile.id],
+            (err, topicsResult) => {
+                if (err) throw err;
+
+                const userTopics = topicsResult.map(topic => topic.name);
+
+                // Fetch posts made by the user
+                db.query(
+                    'SELECT * FROM posts WHERE user_id = ?',
+                    [userProfile.id],
+                    (err, postsResult) => {
+                        if (err) throw err;
+
+                        const userPosts = postsResult;
+
+                        res.render('profile', { userProfile, loggedInUser, userTopics, userPosts });
+                    }
+                );
+            }
+        );
+    });
 });
 
-// profile route
+
+
+
+
+// profile route for the currently logged-in user
 app.get('/profile', isAuthenticated, (req, res) => {
-	const loggedInUser = req.user;
+    const loggedInUser = req.user;
 
-	// Fetch user details from the database based on the logged-in user
-	db.query('SELECT * FROM users WHERE id = ?', [loggedInUser.id], (err, userResult) => {
-		if (err) throw err;
+    // Fetch user details from the database based on the logged-in user
+    db.query('SELECT * FROM users WHERE id = ?', [loggedInUser.id], (err, userResult) => {
+        if (err) throw err;
 
-		if (userResult.length === 0) {
-			return res.send('User does not exist');
-		}
+        if (userResult.length === 0) {
+            return res.send('User does not exist');
+        }
 
-		const userProfile = userResult[0];
+        const userProfile = userResult[0];
 
-		res.render('profile', { userProfile, loggedInUser });
-	});
+        // Fetch the topics the user is a member of
+        db.query(
+            'SELECT topics.name FROM topic_memberships ' +
+            'INNER JOIN topics ON topic_memberships.topic_id = topics.id ' +
+            'WHERE topic_memberships.user_id = ?',
+            [loggedInUser.id],
+            (err, topicsResult) => {
+                if (err) throw err;
+
+                const userTopics = topicsResult.map(topic => topic.name);
+
+                // Fetch posts made by the user
+                db.query(
+                    'SELECT * FROM posts WHERE user_id = ?',
+                    [loggedInUser.id],
+                    (err, postsResult) => {
+                        if (err) throw err;
+
+                        const userPosts = postsResult;
+
+                        res.render('profile', { userProfile, loggedInUser, userTopics, userPosts });
+                    }
+                );
+            }
+        );
+    });
 });
+
+
+
 
 // users route
 app.get('/users', (req, res) => {
-	const loggedInUser = req.user;
+    const loggedInUser = req.user;
 
-	db.query('SELECT username FROM users', (err, users) => {
-		if (err) throw err;
+    db.query('SELECT username FROM users', (err, users) => {
+        if (err) throw err;
 
-		res.render('users', { users, loggedInUser });
-	});
+        res.render('users', { users, loggedInUser });
+    });
 });
 
-// Middleware to populate req.user from the session
-app.use((req, res, next) => {
-	if (req.session.user) {
-		req.user = req.session.user;
-	}
-	next();
-});
 
-// Login route
+
+// Your login route
 app.get('/login', (req, res) => {
-	res.render('login');
+    res.render('login');
 });
 
 app.post('/login', (req, res) => {
-	const { username, password } = req.body;
+    const { username, password } = req.body;
 
-	db.query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, results) => {
-		if (err) throw err;
+    db.query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, results) => {
+        if (err) throw err;
 
-		if (results.length > 0) {
-			// Store user information in the session
-			req.session.user = results[0];
-			res.redirect('./');
-		} else {
-			res.render('login', { errorMessage: 'User does not exist.' });
-		}
-	});
+        if (results.length > 0) {
+            // Store user information in the session
+            req.session.user = results[0];
+            res.locals.loggedInUser = results[0];
+            res.redirect('./');
+        } else {
+            res.render('login', { errorMessage: 'User does not exist.' });
+        }
+    });
 });
+
 
 // topics route
 app.get('/topics', (req, res) => {
@@ -145,47 +220,97 @@ app.get('/topics', (req, res) => {
 });
 
 // topics id route
-app.get('/topics/:id', (req, res) => {
-	const topicId = parseInt(req.params.id);
+app.get('/topics/:id', isAuthenticated, (req, res) => {
+    const topicId = parseInt(req.params.id);
 
-	// Check if the parsed topicId is a valid number
-	if (isNaN(topicId)) {
-		return res.send('Invalid topic ID');
-	}
+    // Check if the parsed topicId is a valid number
+    if (isNaN(topicId)) {
+        return res.send('Invalid topic ID');
+    }
 
-	const loggedInUser = req.user;
+    const loggedInUser = req.user;
 
-	db.query(
-		'SELECT name FROM topics WHERE id = ?',
-		[topicId],
-		(err, topicResult) => {
-			if (err) {
-				throw err;
-			}
+    db.query(
+        'SELECT name FROM topics WHERE id = ?',
+        [topicId],
+        (err, topicResult) => {
+            if (err) {
+                throw err;
+            }
 
-			if (topicResult.length === 0) {
-				return res.send('Topic does not exist');
-			}
+            if (topicResult.length === 0) {
+                return res.send('Topic does not exist');
+            }
 
-			const topicName = topicResult[0].name;
+            const topicName = topicResult[0].name;
 
-			// Fetch both posts and their corresponding replies
-			db.query(
-				'SELECT posts.*, users.username, replies.content as replyContent, replies.created_at as replyCreatedAt ' +
-				'FROM posts ' +
-				'LEFT JOIN users ON posts.user_id = users.id ' +
-				'LEFT JOIN replies ON posts.id = replies.post_id ' +
-				'WHERE posts.topic_id = ?',
-				[topicId],
-				(err, posts) => {
-					if (err) throw err;
+            // Fetch both posts and their corresponding replies
+            db.query(
+                'SELECT posts.*, users.username, replies.content as replyContent, replies.created_at as replyCreatedAt ' +
+                'FROM posts ' +
+                'LEFT JOIN users ON posts.user_id = users.id ' +
+                'LEFT JOIN replies ON posts.id = replies.post_id ' +
+                'WHERE posts.topic_id = ?',
+                [topicId],
+                (err, posts) => {
+                    if (err) throw err;
 
-					res.render('topic', { topicId, topicName, posts, loggedInUser });
-				}
-			);
-		}
-	);
+                    // Check if the user is already a member of the topic
+                    db.query(
+                        'SELECT COUNT(*) as count FROM topic_memberships WHERE user_id = ? AND topic_id = ?',
+                        [loggedInUser.id, topicId],
+                        (err, membershipCountResult) => {
+                            if (err) throw err;
+
+                            const isMember = membershipCountResult[0].count > 0;
+
+                            res.render('topic', { topicId, topicName, posts, loggedInUser, isMember });
+                        }
+                    );
+                }
+            );
+        }
+    );
 });
+
+
+// join topic route
+app.post('/join-topic/:topicId', isAuthenticated, (req, res) => {
+    const topicId = req.params.topicId;
+    const userId = req.user.id;
+
+    // Insert the user into the topic_memberships table to join the topic
+    db.query(
+        'INSERT INTO topic_memberships (user_id, topic_id) VALUES (?, ?)',
+        [userId, topicId],
+        (err, result) => {
+            if (err) throw err;
+
+            res.redirect(`/topics/${topicId}`);
+        }
+    );
+});
+
+// details route
+app.get('/details/:topicId', isAuthenticated, (req, res) => {
+    const topicId = req.params.topicId;
+
+    // Fetch details for the specified topic
+    db.query('SELECT * FROM topics WHERE id = ?', [topicId], (err, topicResult) => {
+        if (err) throw err;
+
+        if (topicResult.length === 0) {
+            return res.send('Topic does not exist');
+        }
+
+        const topicDetails = topicResult[0];
+
+        // Render the details page with the topic information
+        res.render('details', { topicDetails, loggedInUser: req.user });
+    });
+});
+
+
 
 // create topic route
 app.get('/create-topic', (req, res) => {
@@ -201,40 +326,66 @@ app.post('/create-topic', (req, res) => {
 		const topicId = result.insertId;
 
 		// Redirect to the newly created topic
-		res.redirect(`./topics/${topicId}`);
+		res.redirect(`/topics/${topicId}`);
 	});
 });
 
 // create post route 
 app.get('/create-post/:topicId', isAuthenticated, (req, res) => {
-	const topicId = req.params.topicId;
-	const loggedInUser = req.user;
+    const topicId = req.params.topicId;
+    const loggedInUser = req.user;
 
-	res.render('create-post', { topicId, loggedInUser });
+    // Check if the logged-in user is a member of the specified topic
+    db.query('SELECT COUNT(*) as count FROM topic_memberships WHERE user_id = ? AND topic_id = ?', [loggedInUser.id, topicId], (err, result) => {
+        if (err) throw err;
+
+        const isMember = result[0].count > 0;
+
+        if (isMember) {
+            res.render('create-post', { topicId, loggedInUser });
+        } else {
+            res.send('You are not a member of this topic and cannot create a post.');
+        }
+    });
 });
 
 app.post('/create-post/:topicId', isAuthenticated, (req, res) => {
-	if (!req.user) {
-		return res.redirect('./login');
-	}
+    if (!req.user) {
+        return res.redirect('./login');
+    }
 
-	const { title, content } = req.body;
-	const userId = req.user.id;
-	const topicId = req.params.topicId;
+    const { title, content } = req.body;
+    const userId = req.user.id;
+    const topicId = req.params.topicId;
 
-	db.query(
-		'INSERT INTO posts (title, content, user_id, topic_id) VALUES (?, ?, ?, ?)',
-		[title, content, userId, topicId],
-		(err, result) => {
-			if (err) throw err;
-			res.redirect(`./topics/${topicId}`);
-		}
-	);
+    // Check if the logged-in user is a member of the specified topic
+    db.query('SELECT COUNT(*) as count FROM topic_memberships WHERE user_id = ? AND topic_id = ?', [userId, topicId], (err, result) => {
+        if (err) throw err;
+
+        const isMember = result[0].count > 0;
+
+        if (isMember) {
+            // User is a member, proceed to create the post
+            db.query(
+                'INSERT INTO posts (title, content, user_id, topic_id) VALUES (?, ?, ?, ?)',
+                [title, content, userId, topicId],
+                (err, result) => {
+                    if (err) throw err;
+                    res.redirect(`/topics/${topicId}`);
+                }
+            );
+        } else {
+            res.send('You are not a member of this topic and cannot create a post.');
+        }
+    });
 });
+
+
 
 // all posts route
 app.get('/all-posts', (req, res) => {
 	const searchQuery = req.query.search || ''; // Get the search query from the URL
+	
 
 	// Modify your query to include the search condition
 	const query = 'SELECT * FROM posts WHERE title LIKE ? OR content LIKE ?';
@@ -290,7 +441,7 @@ app.post('/reply/:postId', isAuthenticated, (req, res) => {
 			[content, userId, postId],
 			(err, result) => {
 				if (err) throw err;
-				res.redirect(`./topics/${topicId}`);
+				res.redirect(`/topics/${topicId}`);
 			}
 		);
 	});
@@ -331,7 +482,7 @@ app.post('/delete-post/:postId', isAuthenticated, (req, res) => {
 	// Delete the post
 	db.query('DELETE FROM posts WHERE id = ?', [postId], (err, result) => {
 		if (err) throw err;
-		res.redirect('./all-posts');
+		res.redirect('/all-posts');
 	});
 });
 

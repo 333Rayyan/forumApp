@@ -1,0 +1,15 @@
+{
+  "name": "forumapp",
+  "version": "1.0.0",
+  "description": "to create a post you must be logged in and then you can go to browse topic and you will see an option to create post",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql": "^2.18.1"
+  }
+}

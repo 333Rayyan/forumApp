@@ -12,11 +12,11 @@
 	<h1>Create Post</h1>
 
 	<% if (loggedInUser) { %>
-		<p>Welcome, <%= loggedInUser.username %>! <br><a href="/logout">Logout</a></p>
+		<p>Welcome, <%= loggedInUser.username %>! <br><a href="./logout">Logout</a></p>
 		<% } else { %>
-			<a href="/login">Login</a>
+			<a href="./login">Login</a>
 			<br>
-			<a href="/register">Register</a>
+			<a href="./register">Register</a>
 			<% } %>
 
 				<form action="/create-post/<%= topicId %>" method="post">
@@ -27,7 +27,7 @@
 					<button type="submit">Create Post</button>
 				</form>
 
-				<a href="/">Back to Home</a>
+				<a href="./">Back to Home</a>
 </body>
 
 </html>

@@ -37,3 +37,7 @@ textarea {
 	margin-bottom: 10px;
 	box-sizing: border-box;
 }
+
+.right-links {
+    float: right;
+}

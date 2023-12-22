@@ -5,32 +5,45 @@
 	<link rel="stylesheet" href="styles.css">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Your Forum App - Users</title>
+	<title>All Users</title>
 </head>
 
 <body>
-	<h1>Registered Users</h1>
+	<h1>All Users</h1>
 
 	<% if (loggedInUser) { %>
-		<p>Welcome, <%= loggedInUser.username %>! <a href="/logout">Logout</a></p>
+		<p>Welcome, <%= loggedInUser.username %>!
+				<br><a href="./logout">Logout</a></p>
 		<% } else { %>
-			<a href="/register">Register to add ur name to the list</a>
+			<a href="./register">Register to add your name to the list</a>
 			<br>
 			<br>
-			<a href="/login">Login</a>
+			<a href="./login">Login</a>
 			<br>
-
 			<% } %>
 
-				<ul>
-					<% users.forEach(user=> { %>
-						<li>
-							<%= user.username %>
-						</li>
-						<% }); %>
-				</ul>
+				<br>
+				<a href="/">Home</a>
+				<br>
+				<br>
+				<br>
+				<br>
 
-				<a href="/">Back to Home</a>
+				<!-- Display the list of users -->
+				<% users.forEach(user=> { %>
+					<div>
+						<!-- Link to the user's profile -->
+						<a href="/profile/<%= user.username %>">
+							<%= user.username %>
+						</a>
+					</div>
+					<% }); %>
+
+						<!-- Display the link to go back to the home page -->
+						<br>
+						<br>
+						<a href="./">Go Back</a>
+
 </body>
 
 </html>

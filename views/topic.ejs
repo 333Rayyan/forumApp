@@ -13,46 +13,51 @@
 	<h1>
 		<%= topicName %>
 	</h1>
-	<br>
-	<a href="/create-post/<%= topicId %>">Create a Post</a>
-	<br>
-	<br>
-	<a href="/">Home</a>
-	<br>
-	<br>
+	<% if (!isMember) { %>
+		<form action="/join-topic/<%= topicId %>" method="post">
+			<button type="submit">Join Topic</button>
+		</form>
+		<% } %>
+			<br>
+			<a href="/details/<%= topicId %>">View Topic "<%= topicName %>" Details</a>
+			<br>
+			<br>
+			<br>
+			<a href="/create-post/<%= topicId %>">Create a Post</a>
+			<br>
 
-	<!-- Display posts and replies -->
-	<% posts.forEach(post=> { %>
-		<div>
-			<h3>
-				<%= post.title %>
-			</h3>
-			<p>
-				<%= post.content %>
-			</p>
-			<p>Posted by <%= post.username %> on <%= post.created_at %>
-			</p>
 
-			<!-- Display replies for the current post -->
-			<% if (post.replyContent) { %>
-				<div class="reply">
-					<br>
-					<p>Reply: <%= post.replyContent %>
+			<!-- Display posts and replies -->
+			<% posts.forEach(post=> { %>
+				<div>
+					<h3>
+						<%= post.title %>
+					</h3>
+					<p>
+						<%= post.content %>
 					</p>
-					<p>Reply by: <%= post.username %>
+					<p>Posted by <%= post.username %> on <%= post.created_at %>
 					</p>
+
+					<!-- Display replies for the current post -->
+					<% if (post.replyContent) { %>
+						<div class="reply">
+							<br>
+							<p>Reply: <%= post.replyContent %>
+							</p>
+							<p>Reply by: <%= post.username %>
+							</p>
+						</div>
+						<% } %>
+
+							<!-- Link to reply to the current post -->
+							<a href="/reply/<%= post.id %>">Reply to Post</a>
+
+							<a href="/delete-post/<%= post.id %>">Delete Post</a>
+
+							<hr>
 				</div>
-				<% } %>
-
-					<!-- Link to reply to the current post -->
-					<a href="/reply/<%= post.id %>">Reply to Post</a>
-
-					<a href="/delete-post/<%= post.id %>">Delete Post</a>
-
-					<hr>
-		</div>
-		<% }); %>
-
+				<% }); %>
 </body>
 
 </html>

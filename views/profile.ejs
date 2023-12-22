@@ -2,24 +2,75 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title>
+        <%= userProfile.username %>'s Profile
+    </title>
 </head>
 
 <body>
-    <h1>User Profile</h1>
-    <p>Welcome, <%= loggedInUser.username %>!</p>
+    <h1>
+        <%= userProfile.username %>'s Profile
+    </h1>
 
-    <h2>Your Profile Information:</h2>
-    <ul>
-        <li><strong>Username:</strong>
-            <%= userProfile.username %>
-        </li>
-        <!-- Add other user details as needed -->
-    </ul>
+    <% if (loggedInUser) { %>
+        <p>Welcome, <%= loggedInUser.username %>!
+                <br>
+                <a href="./logout">Logout</a></p>
+        <% } else { %>
+            <a href="./register">Register to add your name to the list</a>
+            <br>
+            <br>
+            <a href="./login">Login</a>
+            <br>
+            <% } %>
 
-    <a href="/">Back to Home</a>
+                <!-- Display user details -->
+                <br>
+                <br>
+                <h2>User Details:</h2>
+                <p>Username: <%= userProfile.username %>
+                </p>
+
+                <!-- Display the list of topics the user is a member of -->
+                <% if (userTopics && userTopics.length> 0) { %>
+                    <h2>Topics, <%= userProfile.username %> is a Member of:</h2>
+                    <ul>
+                        <% userTopics.forEach(topic=> { %>
+                            <li>
+                                <%= topic.name %>
+                            </li>
+                            <% }); %>
+                    </ul>
+                    <% } else { %>
+                        <p>
+                            <%= userProfile.username %> is not a member of any topics.
+                        </p>
+                        <% } %>
+
+                            <!-- Display user posts -->
+                            <% if (userPosts && userPosts.length> 0) { %>
+                                <h2>Posts made by <%= userProfile.username %>:</h2>
+                                <ul>
+                                    <% userPosts.forEach(post=> { %>
+                                        <li>
+                                            <%= post.title %>
+                                        </li>
+                                        <% }); %>
+                                </ul>
+                                <% } else { %>
+                                    <p>
+                                        <%= userProfile.username %> has not made any posts.
+                                    </p>
+                                    <% } %>
+
+                                        <!-- Display the link to go back to the home page -->
+                                        <br>
+                                        <br>
+                                        <a href="/">Go Back</a>
+
 </body>
 
 </html>

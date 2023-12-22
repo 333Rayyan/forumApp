@@ -10,7 +10,7 @@
 
 <body>
     <!-- Add a search form -->
-    <form action="/all-posts" method="GET">
+    <form action="./all-posts" method="GET">
         <label for="search">Search Posts:</label>
         <input type="text" id="search" name="search" placeholder="Enter search term">
         <button type="submit">Search</button>
@@ -23,14 +23,14 @@
         <% if (loggedInUser) { %>
             <span>Welcome, <%= loggedInUser.username %>!</span>
             <br>
-            <a href="/logout">Logout</a>
+            <a href="./logout">Logout</a>
             <% } else { %>
-                <a href="/login">Login</a>
+                <a href="./login">Login</a>
                 <br>
-                <a href="/register">Register</a>
+                <a href="./register">Register</a>
                 <% } %>
                     <br>
-                    <a href="/">Home</a>
+                    <a href="./">Home</a>
     </nav>
 
     <h1>All Posts</h1>

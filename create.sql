@@ -35,3 +35,11 @@ CREATE TABLE IF NOT EXISTS replies (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (post_id) REFERENCES posts(id)
 );
+
+CREATE TABLE topic_memberships (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    topic_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (topic_id) REFERENCES topics(id)
+);
